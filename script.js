@@ -174,56 +174,127 @@ function saveQuiz() {
   renderQuizesSection()
 }
 
-function takeQuiz(quiz_index) {
+function takeNextQuestion(event) {
+  event.preventDefault()
+
+  const { questions } = quizes[quiz_index]
+
+  if (question_index < questions.length - 1) {
+    question_index++;
+
+    const questionBox = document.querySelector('.questions')
+    questionBox.innerText = `${question_index + 1}. ${questions[question_index].text}` // sth
+
+    const choicesDiv = document.querySelector(`.choices`)
+    while(choicesDiv.firstChild) {
+      choicesDiv.removeChild(choicesDiv.firstChild)
+    }
+    for (let i = 1; i <= numOfChoices; i++) {
+      choicesDiv.innerHTML += `
+      <div class="choice${i}">
+        <input type="radio" name="choice">
+        <label>${questions[question_index].choices[i - 1]}</label>
+      </div>
+      `
+    }
+  }
+}
+
+function finishTakingQuiz(event) {
+  event.preventDefault()
+  console.log("finish quiz")
+}
+
+function takePreviousQuestion(event) {
+  event.preventDefault()
+
+  const { questions } = quizes[quiz_index]
+
+  if (question_index > 0) {
+    question_index--;
+
+    const questionBox = document.querySelector('.questions')
+    questionBox.innerText = `${question_index + 1}. ${questions[question_index].text}` // sth
+
+    const choicesDiv = document.querySelector(`.choices`)
+    while(choicesDiv.firstChild) {
+      choicesDiv.removeChild(choicesDiv.firstChild)
+    }
+    for (let i = 1; i <= numOfChoices; i++) {
+      choicesDiv.innerHTML += `
+      <div class="choice${i}">
+        <input type="radio" name="choice">
+        <label>${questions[question_index].choices[i - 1]}</label>
+      </div>
+      `
+    }
+  }
+}
+
+function takeQuiz(quiz_index_to_take) {
+
+  quiz_index = quiz_index_to_take
   const questions = quizes[quiz_index].questions
-  console.log(questions)
-  questions.map(question => {
-    quizToTake.innerHTML += `
-      <div class="col">
-        <a href="#">
-          <button class="previous_button">
-            Previous
-          </button>
-        </a>
-        <a href="#">
-          <button class="next_button">
-            Next
-          </button>
-        </a>
-        <a href="#">
-          <button class="finish_button">
-            Finish
-          </button>
-        </a>
+  question_index = 0
+  const question = questions[question_index]
+  
+  for (let i = 0; i < questions.length; i++) {
+    user_answers.push(-1)
+  }
+
+  quizToTake.innerHTML += `
+    <div class="col">
+      <a href="#">
+        <button class="previous_button">
+          Previous
+        </button>
+      </a>
+      <a href="#">
+        <button class="next_button">
+          Next
+        </button>
+      </a>
+      <a href="#">
+        <button class="finish_button">
+          Finish
+        </button>
+      </a>
+    </div>
+    <div class="qa_to_take">
+      <div class="questions">
+        ${1}. ${question.text}
       </div>
-      <div class="qa_to_take">
-        <div class="questions">
-          ${questions.indexOf(question) + 1}. ${question.text}
+      <div class="choices">
+        <div class="choice1">
+          <input type="radio" name="choice">
+          <label>${question.choices[0]}</label>
         </div>
-        <div class="choices">
-          <div>
-            <input type="radio" name="choice">
-            <label>${question.choices[0]}</label>
-          </div>
-          <div>
-            <input type="radio" name="choice">
-            <label>${question.choices[1]}</label>
-          </div>
-          <div>
-            <input type="radio" name="choice">
-            <label>${question.choices[2]}</label>
-          </div>
-          <div>
-            <input type="radio" name="choice">
-            <label>${question.choices[3]}</label>
-          </div>
+        <div class="choice2">
+          <input type="radio" name="choice">
+          <label>${question.choices[1]}</label>
+        </div>
+        <div class="choice3">
+          <input type="radio" name="choice">
+          <label>${question.choices[2]}</label>
+        </div>
+        <div class="choice4">
+          <input type="radio" name="choice">
+          <label>${question.choices[3]}</label>
         </div>
       </div>
-      <div>
-        quiz questions numbers
-      </div>
-    `
-  })
+    </div>
+    <div>
+      quiz questions numbers
+    </div>
+  `
+
+  const nextBtn = document.querySelector('.col .next_button')
+  const finishBtn = document.querySelector('.col .finish_button')
+  const previousBtn = document.querySelector('.col .previous_button')
+
+  nextBtn.addEventListener('click', takeNextQuestion)
+  finishBtn.addEventListener('click', finishTakingQuiz)
+  previousBtn.addEventListener('click', takePreviousQuestion)
 }
 
 function renderQuizesSection() {
@@ -320,5 +391,7 @@ let quiz_index = quizes ? quizes.length : 0;
 let question_index = 0;
 const numOfChoices = 4;
 const questions = []
+
+const user_answers = []
 
 renderQuizesSection()
