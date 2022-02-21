@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Quiz App</title>
+  </head>
+  <body>
+    <div id="nav_container">
+      <div id="logo">
+        <a href="#"><img src="" alt="Logo"></a>
+      </div>
+      <div>
+        <a href="#">Create Quiz</a>
+      </div>
+      <div>
+        <a href="#">Take Quiz</a>
+      </div>
+      <div>
+        <a href="#">Login</a>
+      </div>
+    </div>
+    <div id="slider_container">
+      <img class="slide" src="./images/slider1.jpg">
+      <!-- <img class="slide" src="./images/E-learning.jpg"> -->
+      <img class="slide" src="./images/slider2.jpg">
+      <div class="slider_handler">
+        <div class="slider_left_control" onclick="nextSlide(-1)">&#10094;</div>
+        <div class="slider_right_control" onclick="nextSlide(1)">&#10095;</div>
+        <span class="slider_dots" onclick="currentSlide(1)"></span>
+        <!-- <span class="slider_dots" onclick="currentSlide(2)"></span> -->
+        <span class="slider_dots" onclick="currentSlide(3)"></span>
+      </div>
+    </div>
+    <h3>Available Quizes</h3>
+    <div class="quizes">
+      <!-- To add quizes from quiz bank -->
+    </div>
+    <div id="create_quiz_container">
+      <h2>Create a Quiz</h2>
+      <div class="question_answer">
+        <label for="">Number of questions : </label>
+        <input type="number" id="question_counter" required>
+        <button onclick="createQuiz()">Submit</button>
+        <span id="number_error"></span>
+      </div>
+    </div>
+    <div id="quizes_container">
+
+    </div>
+    <div id="footer">
+
+    </div>
+
+    <h3>Take Quiz</h3>
+    <div class="quiz_to_take">
+      <!-- To add Quiz to Take questions and choices -->
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
