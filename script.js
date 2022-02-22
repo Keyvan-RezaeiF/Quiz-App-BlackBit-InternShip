@@ -48,36 +48,35 @@ const quizToTake = document.querySelector('.quiz_to_take')
 
 class Quiz {
   constructor(questions) {
-    this.index = quiz_index++
+    this.index = quizIndex++
     this.questions = questions
   }
 }
 
 class Question {
-  constructor(index, text, choices, answer) {
+  constructor(index, text, choices, answerIndex) {
     this.index = index
     this.text = text
     this.choices = choices
-    this.answer = answer
+    this.answerIndex = answerIndex
   }
 }
 
 function renderPreviousQuestion(event) {
   event.preventDefault()
 
-  if (question_index > 0) {
-    question_index--;
+  if (questionIndex > 0) {
+    questionIndex--;
 
-    const current_quiz = JSON.parse(localStorage.getItem('Current Quiz'))
+    const currentQuiz = JSON.parse(localStorage.getItem('Current Quiz'))
 
-    if (current_quiz && current_quiz[question_index]) {
-      const {text, choices, answer} = current_quiz[question_index]
+    if (currentQuiz && currentQuiz[questionIndex]) {
+      const {text, choices, answerIndex} = currentQuiz[questionIndex]
       document.querySelector('#question_box').value = text
       for (let i = 1; i <= numOfChoices; i++) {
         document.querySelector(`.choice${i}`).value = choices[i - 1]
       }
-      answer_index = choices.indexOf(answer)
-      document.querySelector('.correct_choice').value = answer_index + 1
+      document.querySelector('.correct_choice').value = answerIndex + 1
     } else {
       document.querySelector('#question_box').value = ""
       for (let i = 1; i <= numOfChoices; i++) {
@@ -91,19 +90,18 @@ function renderPreviousQuestion(event) {
 function renderNextQuestion(event) {
   event.preventDefault()
 
-  if (question_index < questionCounter.value - 1) {
-    question_index++;
+  if (questionIndex < questionCounter.value - 1) {
+    questionIndex++;
 
-    const current_quiz = JSON.parse(localStorage.getItem('Current Quiz'))
+    const currentQuiz = JSON.parse(localStorage.getItem('Current Quiz'))
 
-    if (current_quiz && current_quiz[question_index]) {
-      const {text, choices, answer} = current_quiz[question_index]
+    if (currentQuiz && currentQuiz[questionIndex]) {
+      const {text, choices, answerIndex} = currentQuiz[questionIndex]
       document.querySelector('#question_box').value = text
       for (let i = 1; i <= 4; i++) {
         document.querySelector(`.choice${i}`).value = choices[i - 1]
       }
-      answer_index = choices.indexOf(answer)
-      document.querySelector('.correct_choice').value = answer_index + 1
+      document.querySelector('.correct_choice').value = answerIndex + 1
     } else {
       document.querySelector('#question_box').value = ""
       for (let i = 1; i <= numOfChoices; i++) {
@@ -118,8 +116,8 @@ function saveQuestion(event) {
   event.preventDefault()
 
   const answerDiv = document.querySelector('.correct_choice')
-  const answer_index = answerDiv.value
-  if (answer_index >= 1 && answer_index <= 4) { // check answer box to be not empty
+  const answerIndex = answerDiv.value
+  if (answerIndex >= 1 && answerIndex <= 4) { // check answer box to be not empty
     const questionBox = document.querySelector('#question_box')
     if (questionBox.value.length != 0) { // check question box to be not empty
       const choices = []
@@ -136,10 +134,9 @@ function saveQuestion(event) {
           // break;
         }
       }
-      answer = choices[answer_index - 1]
 
-      const newQuestion = new Question(question_index, questionBox.value, choices, answer)
-      questions[question_index] = newQuestion
+      const newQuestion = new Question(questionIndex, questionBox.value, choices, answerIndex - 1)
+      questions[questionIndex] = newQuestion
       localStorage.setItem('Current Quiz', JSON.stringify(questions))
     } else {
       const questionError = document.createElement('span')
@@ -154,7 +151,7 @@ function saveQuestion(event) {
     answerDiv.parentNode.insertBefore(answerError, answerDiv.nextSibling);
   }
 
-  if (question_index == questionCounter.value - 1) {
+  if (questionIndex == questionCounter.value - 1) {
     saveQuiz()
   }
 }
@@ -162,7 +159,7 @@ function saveQuestion(event) {
 function saveQuiz() {
   const newQuiz = new Quiz(questions)
   quizes.push(newQuiz)
-  question_index = 0
+  questionIndex = 0
   localStorage.setItem('Quiz Bank', JSON.stringify(quizes))
   localStorage.removeItem('Current Quiz')
 
@@ -177,13 +174,15 @@ function saveQuiz() {
 function takeNextQuestion(event) {
   event.preventDefault()
 
-  const { questions } = quizes[quiz_index]
+  updateScore(questionIndex)
 
-  if (question_index < questions.length - 1) {
-    question_index++;
+  const { questions } = quizes[quizIndex]
+
+  if (questionIndex < questions.length - 1) {
+    questionIndex++;
 
     const questionBox = document.querySelector('.questions')
-    questionBox.innerText = `${question_index + 1}. ${questions[question_index].text}` // sth
+    questionBox.innerText = `${questionIndex + 1}. ${questions[questionIndex].text}` // sth
 
     const choicesDiv = document.querySelector(`.choices`)
     while(choicesDiv.firstChild) {
@@ -191,30 +190,54 @@ function takeNextQuestion(event) {
     }
     for (let i = 1; i <= numOfChoices; i++) {
       choicesDiv.innerHTML += `
-      <div class="choice${i}">
-        <input type="radio" name="choice">
-        <label>${questions[question_index].choices[i - 1]}</label>
+      <div>
+        <input type="radio" name="choice" id="choice${i}">
+        <label>${questions[questionIndex].choices[i - 1]}</label>
       </div>
       `
     }
+    updateRadioButtons(questionIndex)
   }
 }
 
 function finishTakingQuiz(event) {
   event.preventDefault()
-  console.log("finish quiz")
+
+  updateScore(questionIndex)
+  calculateScore()
+
+  while(quizToTake.firstChild) {
+    quizToTake.removeChild(quizToTake.firstChild)
+  }
+
+  const scoreBoard = document.createElement('h4')
+  scoreBoard.innerText = ` Your score is ${userScore} of ${userAnswers.length}`
+  quizToTake.appendChild(scoreBoard)
+
+  // Hide taken quiz
+}
+
+function calculateScore() {
+  const { questions } = quizes[quizIndex]
+  for (let i = 0; i < userAnswers.length; i++) {
+    if (userAnswers[i] == questions[i].answerIndex) {
+      userScore++
+    }
+  }
 }
 
 function takePreviousQuestion(event) {
   event.preventDefault()
 
-  const { questions } = quizes[quiz_index]
+  updateScore(questionIndex)
 
-  if (question_index > 0) {
-    question_index--;
+  const { questions } = quizes[quizIndex]
+
+  if (questionIndex > 0) {
+    questionIndex--;
 
     const questionBox = document.querySelector('.questions')
-    questionBox.innerText = `${question_index + 1}. ${questions[question_index].text}` // sth
+    questionBox.innerText = `${questionIndex + 1}. ${questions[questionIndex].text}` // sth
 
     const choicesDiv = document.querySelector(`.choices`)
     while(choicesDiv.firstChild) {
@@ -222,24 +245,44 @@ function takePreviousQuestion(event) {
     }
     for (let i = 1; i <= numOfChoices; i++) {
       choicesDiv.innerHTML += `
-      <div class="choice${i}">
-        <input type="radio" name="choice">
-        <label>${questions[question_index].choices[i - 1]}</label>
+      <div>
+        <input type="radio" name="choice" id="choice${i}">
+        <label>${questions[questionIndex].choices[i - 1]}</label>
       </div>
       `
     }
+    updateRadioButtons(questionIndex)
   }
 }
 
-function takeQuiz(quiz_index_to_take) {
+function updateRadioButtons(questionIndex) {
+  const userAnswer = userAnswers[questionIndex]
+  if (userAnswer != -1) {
+    document.getElementById(`choice${userAnswer + 1}`).checked = true
+  }
+}
 
-  quiz_index = quiz_index_to_take
-  const questions = quizes[quiz_index].questions
-  question_index = 0
-  const question = questions[question_index]
-  
+function updateScore(questionIndex) {
+  if (document.querySelector('#choice1').checked) {
+    userAnswers[questionIndex] = 0
+  } else if (document.querySelector('#choice2').checked) {
+    userAnswers[questionIndex] = 1
+  } else if (document.querySelector('#choice3').checked) {
+    userAnswers[questionIndex] = 2
+  } else if (document.querySelector('#choice4').checked) {
+    userAnswers[questionIndex] = 3
+  }
+}
+
+function takeQuiz(quizIndexToTake) {
+
+  quizIndex = quizIndexToTake
+  const questions = quizes[quizIndex].questions
+  questionIndex = 0
+  const question = questions[questionIndex]
+
   for (let i = 0; i < questions.length; i++) {
-    user_answers.push(-1)
+    userAnswers.push(-1)
   }
 
   quizToTake.innerHTML += `
@@ -265,26 +308,23 @@ function takeQuiz(quiz_index_to_take) {
         ${1}. ${question.text}
       </div>
       <div class="choices">
-        <div class="choice1">
-          <input type="radio" name="choice">
+        <div>
+          <input type="radio" name="choice" id="choice1">
           <label>${question.choices[0]}</label>
         </div>
-        <div class="choice2">
-          <input type="radio" name="choice">
+        <div>
+          <input type="radio" name="choice" id="choice2">
           <label>${question.choices[1]}</label>
         </div>
-        <div class="choice3">
-          <input type="radio" name="choice">
+        <div>
+          <input type="radio" name="choice" id="choice3">
           <label>${question.choices[2]}</label>
         </div>
-        <div class="choice4">
-          <input type="radio" name="choice">
+        <div>
+          <input type="radio" name="choice" id="choice4">
           <label>${question.choices[3]}</label>
         </div>
       </div>
-    </div>
-    <div>
-      quiz questions numbers
     </div>
   `
 
@@ -386,12 +426,13 @@ function createQuiz() {
 
 const localQuizBank = JSON.parse(localStorage.getItem('Quiz Bank'))
 const quizes = localQuizBank ? localQuizBank : []
-let quiz_index = quizes ? quizes.length : 0;
+let quizIndex = quizes ? quizes.length : 0
 
-let question_index = 0;
-const numOfChoices = 4;
+let questionIndex = 0
+const numOfChoices = 4
 const questions = []
 
-const user_answers = []
+const userAnswers = []
+let userScore = 0
 
 renderQuizesSection()
