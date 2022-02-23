@@ -10,18 +10,19 @@
   <body>
     <div id="nav_container">
       <div id="logo">
-        <a href="#"><img src="" alt="Logo"></a>
+        <a href="#"><img src="./images/logo.png" alt="Logo"></a>
       </div>
-      <div>
-        <a href="#">Create Quiz</a>
+      <div class="with_underline">
+        <a href="#" onclick="renderCreateSection()">Create Quiz</a>
       </div>
-      <div>
-        <a href="#">Take Quiz</a>
+      <div class="with_underline">
+        <a href="#quizes_container" onclick="renderTakeSection()">Take Quiz</a>
       </div>
-      <div>
+      <div class="with_underline">
         <a href="#">Login</a>
       </div>
     </div>
+
     <div id="slider_container">
       <img class="slide" src="./images/slider1.jpg">
       <!-- <img class="slide" src="./images/E-learning.jpg"> -->
@@ -34,29 +35,33 @@
         <span class="slider_dots" onclick="currentSlide(3)"></span>
       </div>
     </div>
-    <h3>Available Quizes</h3>
-    <div class="quizes">
-      <!-- To add quizes from quiz bank -->
+
+    <div id="quizes_container">
+      <h3 id="available_header">Available Quizes</h3>
+      <div class="quizes">
+        <!-- To add quizes from quiz bank -->
+      </div>
     </div>
+
     <div id="create_quiz_container">
-      <h2>Create a Quiz</h2>
+      <h3 id="create_quiz_header">Create a Quiz</h3>
       <div class="question_answer">
         <label for="">Number of questions : </label>
-        <input type="number" id="question_counter" required>
-        <button onclick="createQuiz()">Submit</button>
+        <input type="text" id="question_counter" required>
+        <button onclick="createQuiz()" class="submit_button">Submit</button>
         <span id="number_error"></span>
       </div>
     </div>
-    <div id="quizes_container">
 
+    <div class="take_quiz_container">
+      <h3 id="take_quiz_header">Take Quiz</h3>
+      <div class="quiz_to_take">
+        <!-- To add Quiz to Take questions and choices -->
+      </div>
     </div>
+
     <div id="footer">
 
-    </div>
-
-    <h3>Take Quiz</h3>
-    <div class="quiz_to_take">
-      <!-- To add Quiz to Take questions and choices -->
     </div>
 
     <script src="./script.js"></script>
