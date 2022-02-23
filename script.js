@@ -42,7 +42,10 @@ const questionCounter = document.querySelector('#question_counter')
 const numberError = document.querySelector('#number_error')
 const questionAnswerDiv = document.querySelector('.question_answer')
 const quizCardsDiv = document.querySelector('.quizes')
+const quizesContainer = document.querySelector('#quizes_container')
 const quizToTakeDiv = document.querySelector('.quiz_to_take')
+const takeQuizContainer = document.querySelector('.take_quiz_container')
+const createQuizDiv = document.querySelector('#create_quiz_container')
 
 class Quiz {
   constructor(questions) {
@@ -76,7 +79,7 @@ function saveQuiz() {
   questionIndex = 0
   localStorage.removeItem('Current Quiz')
 
-  const createQuizDiv = document.querySelector('#create_quiz_container')
+  // const createQuizDiv = document.querySelector('#create_quiz_container')
   removeAllChildren(createQuizDiv)
 
   renderQuizCards()
@@ -119,25 +122,42 @@ function createNextQuestion(event) {
   }
 }
 
+function createErrorMessage(errorMessage, previousDiv) {
+  const errorDiv = document.createElement('span')
+  errorDiv.textContent = errorMessage
+  errorDiv.style.color = "red"
+  previousDiv.parentNode.insertBefore(errorDiv, previousDiv.nextSibling)
+}
+
+function isChoiceBoxFilled(choice) {
+  return choice.length != 0
+}
+
+function isQuestionBoxFilled(questionBox) {
+  return questionBox.value.length != 0
+}
+
+function isAnswerValid(answerIndex) {
+  return answerIndex >= 1 && answerIndex <= 4
+}
+
 function saveQuestion(event) {
   event.preventDefault()
 
   const answerDiv = document.querySelector('.correct_choice')
   const answerIndex = answerDiv.value
-  if (answerIndex >= 1 && answerIndex <= 4) { // check answer box to be not empty
+  if (isAnswerValid(answerIndex)) {
     const questionBox = document.querySelector('#question_box')
-    if (questionBox.value.length != 0) { // check question box to be not empty
-      const choices = []
+    if (isQuestionBoxFilled(questionBox)) {
+      const choices =  []
       for (let i = 1; i <= numOfChoices; i++) {
         const choiceDiv = document.querySelector(`.choice${i}`)
         const choice = document.querySelector(`.choice${i}`).value
-        if (choice.length != 0) { // check choice box to be not empty
+        if (isChoiceBoxFilled(choice)) {
           choices.push(choice)
         } else {
-          const choiceError = document.createElement('span')
-          choiceError.textContent = "Choice field must not be empty!"
-          choiceError.style.color = "red"
-          choiceDiv.parentNode.insertBefore(choiceError, choiceDiv.nextSibling);
+          const errorMessage = "Choice field must not be empty!"
+          createErrorMessage(errorMessage, choiceDiv)
           // break;
         }
       }
@@ -146,20 +166,25 @@ function saveQuestion(event) {
       questions[questionIndex] = newQuestion
       localStorage.setItem('Current Quiz', JSON.stringify(questions))
     } else {
-      const questionError = document.createElement('span')
-      questionError.textContent = "Question field must not be empty!"
-      questionError.style.color = "red"
-      questionBox.parentNode.insertBefore(questionError, questionBox.nextSibling);
+      const errorMessage = "Question field must not be empty!"
+      createErrorMessage(errorMessage, questionBox)
     }
   } else {
-    const answerError = document.createElement('span')
-    answerError.textContent = "Answer must be between 1 to 4 !"
-    answerError.style.color = "red"
-    answerDiv.parentNode.insertBefore(answerError, answerDiv.nextSibling);
+    const errorMessage = "Answer must be between 1 to 4 !"
+    createErrorMessage(errorMessage, answerDiv)
   }
 
   if (questionIndex == questionCounter.value - 1) {
     saveQuiz()
+    quizesContainer.style.display = "block"
+  }
+}
+
+function renderCreateSection() {
+  if (createQuizDiv.style.display == "none") {
+    quizesContainer.style.display = "none"
+    createQuizDiv.style.display = "block"
+    takeQuizContainer.style.display = "none"
   }
 }
 
@@ -216,7 +241,7 @@ function createQuiz() {
     previousBtn.addEventListener('click', createPreviousQuestion)
 
   } else {
-    numberError.innerText = "Number of questions must be more than 0 !"
+    numberError.innerText = "Number of questions must be a number more than 0 !"
   }
 }
 
@@ -249,7 +274,7 @@ function changeQuestionToTake(questions, questionIndex) {
     choicesDiv.innerHTML += `
     <div>
       <input type="radio" name="choice" id="choice${i}">
-      <label>${questions[questionIndex].choices[i - 1]}</label>
+      <label>${i}) ${questions[questionIndex].choices[i - 1]}</label>
     </div>
     `
   }
@@ -304,7 +329,8 @@ function finishTakingQuiz(event) {
   removeAllChildren(quizToTakeDiv)
 
   const scoreBoard = document.createElement('h4')
-  scoreBoard.innerText = ` Your score is ${userScore} of ${userAnswers.length}`
+  scoreBoard.id = "score_borad"
+  scoreBoard.innerText = `Your Score : ${userScore} of ${userAnswers.length}`
   quizToTakeDiv.appendChild(scoreBoard)
 }
 
@@ -334,19 +360,19 @@ function renderQuizToTake(firstQuestion) {
       <div class="choices">
         <div>
           <input type="radio" name="choice" id="choice1">
-          <label>${firstQuestion.choices[0]}</label>
+          <label>1) ${firstQuestion.choices[0]}</label>
         </div>
         <div>
           <input type="radio" name="choice" id="choice2">
-          <label>${firstQuestion.choices[1]}</label>
+          <label>2) ${firstQuestion.choices[1]}</label>
         </div>
         <div>
           <input type="radio" name="choice" id="choice3">
-          <label>${firstQuestion.choices[2]}</label>
+          <label>3) ${firstQuestion.choices[2]}</label>
         </div>
         <div>
           <input type="radio" name="choice" id="choice4">
-          <label>${firstQuestion.choices[3]}</label>
+          <label>4) ${firstQuestion.choices[3]}</label>
         </div>
       </div>
     </div>
@@ -354,6 +380,13 @@ function renderQuizToTake(firstQuestion) {
 }
 
 function takeQuiz(quizIndexToTake) {
+  if (takeQuizContainer.style.display == "none") {
+    takeQuizContainer.style.display = "block"
+    quizesContainer.style.display = "none"
+    createQuizDiv.style.display = "none"
+  }
+
+  removeAllChildren(quizToTakeDiv)
 
   quizIndex = quizIndexToTake
   const questions = quizes[quizIndex].questions
@@ -375,9 +408,20 @@ function takeQuiz(quizIndexToTake) {
   previousBtn.addEventListener('click', takePreviousQuestion)
 }
 
+function renderTakeSection() {
+  if (quizesContainer.style.display == "none") {
+    takeQuizContainer.style.display = "none"
+    quizesContainer.style.display = "block"
+    createQuizDiv.style.display = "none"
+  }
+}
+
 // Render Created Quizes to Take
 
 function renderQuizCards() {
+  createQuizDiv.style.display = "none"
+  takeQuizContainer.style.display = "none"
+
   removeAllChildren(quizCardsDiv)
 
   const quizes = JSON.parse(localStorage.getItem('Quiz Bank'))

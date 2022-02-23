@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Lato', Arial, Helvetica, sans-serif;
+  font-family: '', 'Lato', Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -50,7 +50,12 @@ a {
   padding: 40px;
 }
 
-#nav_container div a {
+#logo img {
+  width: 100px;
+  height: 50px;
+}
+
+.with_underline a {
   position: relative;
   display: block;
   font-family: "Lato";
@@ -58,7 +63,7 @@ a {
   transition: 1s;
 }
 
-#nav_container div a::after {
+.with_underline a::after {
   position: absolute;
   content: "";
   margin-top: 3px;
@@ -72,11 +77,11 @@ a {
   transform-origin: center;
 }
 
-#nav_container div a:hover {
+.with_underline a:hover {
   color: #d9d9d9;
 }
 
-#nav_container div a:hover::after {
+.with_underline a:hover::after {
   transform: scaleX(1);
   transform-origin: center;
 }
@@ -173,7 +178,7 @@ a {
   background-color: #fff !important;
 }
 
-/* create_quiz */
+/* create quiz */
 
 #create_quiz_container h2 {
   text-align: center;
@@ -190,13 +195,15 @@ a {
   margin-top: 5px;
 }
 
-.question_answer {
-
+#question_counter {
+  font-size: 20px;
+  text-align: center;
+  background: inherit;
+  border: inset;
 }
 
 textarea {
   resize: none;
-  /* display: block; */
 }
 
 input, textarea {
@@ -220,10 +227,11 @@ input, textarea {
   font-size: 20px;
 }
 
-/* previous & next button */
+/* buttons */
 
 .previous_button, .next_button,
-.save_button, .finish_button {
+.save_button, .finish_button,
+.submit_button {
   display: inline-block;
   padding: .75rem 1.25rem;
   border-radius: 10rem;
@@ -239,13 +247,22 @@ input, textarea {
 }
 
 .previous_button:hover, .next_button:hover,
-.save_button:hover, .finish_button:hover {
+.save_button:hover, .finish_button:hover,
+.submit_button:hover {
   background-color: #fff;
   border: 1px solid #0af;
   transition: all 0.5s;
   color: #0af;
   transform: scale(1.1);
   cursor: pointer;
+}
+
+.submit_button {
+  margin-left: 20px;
+}
+
+.qa .save_button {
+  margin-top: 25px;
 }
 
 /* quizez section */
@@ -263,14 +280,32 @@ input, textarea {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  /* max-width: 1200px; */
   margin: 40px 0;
 }
 
-h3 {
+/* headers */
+
+#available_header,
+#take_quiz_header,
+#create_quiz_header {
   text-align: center;
   font-size: 30px;
   margin-top: 50px;
+  text-shadow: 2px 2px 0px #FFFFFF,
+               5px 4px 0px rgba(0,0,0,0.15),
+               23px 32px 0px rgba(43,48,138,0);
+}
+
+#create_quiz_header {
+  margin-bottom: 20px;
+}
+
+.question_answer label {
+  font-size: 20px;
+}
+
+h4 {
+  font-size: 20px;
 }
 
 .quizes p {
@@ -384,7 +419,7 @@ h3 {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 400px;
+  height: 500px;
 }
 
 .quiz_to_take .col {
@@ -396,10 +431,22 @@ h3 {
 }
 
 .qa_to_take {
+  padding: 10px;
+  background: #0af;
   max-width: 800px;
-  min-width: 600px;
+  min-width: 800px;
   border: 1px solid black;
   height: 350px;
+  border-radius: 0% 0% 0% 0% / 0% 0% 0% 0% ;
+  color: #000;
+  box-shadow: 20px 20px rgba(0, 0, 0, 0.15);
+  transition: all 1s ease;
+  font-size: 25px;
+}
+
+.qa_to_take:hover {
+  border-radius: 0% 0% 50% 50% / 50% 50% 5% 5% ;
+  box-shadow: 10px 10px rgba(0, 0, 0, 0.25);
 }
 
 .qa_to_take .questions {
@@ -413,4 +460,16 @@ h3 {
   justify-content: space-around;
   align-items: flex-start;
   height: 300px;
+}
+
+#score_borad {
+  font-size: 40px;
+  padding: 20px;
+  border: 5px solid rgba(70, 40, 16, 0.7);
+  border-radius: 50px;
+}
+
+.quiz_creation textarea {
+  border: inset;
+  box-shadow: 10px 10px rgba(0, 0, 0, 0.2);
 }
